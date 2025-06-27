@@ -20,11 +20,11 @@ export const createShortenedLinkRoute: FastifyPluginAsyncZod = async server => {
             }
         },
         async (request, reply) => {
-            const { shortenedUrl, originalUrl } = request.body as z.infer<typeof createShortenedLinkInputSchema>
+            const { shortenedLink, originalLink } = request.body as z.infer<typeof createShortenedLinkInputSchema>
 
             const result = await createShortenedLink({
-                shortenedUrl,
-                originalUrl
+                shortenedLink,
+                originalLink
             })
 
             if (isRight(result)) {
@@ -39,8 +39,8 @@ export const createShortenedLinkRoute: FastifyPluginAsyncZod = async server => {
             const error = unwrapEither(result)
 
             switch (error) {
-                case 'SHORTENED_URL_ALREADY_EXISTS':
-                    return reply.status(400).send({ message: 'Shortened URL already exists' })
+                case 'SHORTENED_LINK_ALREADY_EXISTS':
+                    return reply.status(400).send({ message: 'Shortened link already exists' })
                 case 'UNKNOWN_ERROR':
                 default:
                     console.error('[CreateShortenedLink] Unknown error:', error);

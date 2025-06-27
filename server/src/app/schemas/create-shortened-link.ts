@@ -1,13 +1,13 @@
 import { z } from "zod";
 
 export const createShortenedLinkInputSchema = z.object({
-    shortenedUrl: z
+    shortenedLink: z
         .string()
-        .min(3, "Shortened URL must be at least 3 character long")
+        .min(3, "Shortened link must be at least 3 character long")
         .regex(/^[a-zA-Z0-9_-]+$/, {
-            message: 'Shortened URL must only contain letters, numbers, _ or -',
+            message: 'Shortened link must only contain letters, numbers, _ or -',
         }),
-    originalUrl: z
+    originalLink: z
         .string()
         .url("Original URL must be a valid URL"),
 })

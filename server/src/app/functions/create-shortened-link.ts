@@ -7,23 +7,23 @@ import { db } from "@/infra/db";
 export async function createShortenedLink(
     input: CreateShortenedLinkInput
 ): Promise<Either<ShortenedLinkCreationError, { id: string }>> {
-    const { shortenedUrl, originalUrl } = createShortenedLinkInputSchema.parse(input);
+    const { shortenedLink, originalLink } = createShortenedLinkInputSchema.parse(input);
 
     const shortenedLinksSchema = schema.shortenedLinks;
 
     try {
-        const [newShortenedUrl] = await db
+        const [newShortenedLink] = await db
             .insert(shortenedLinksSchema)
-            .values({ shortenedUrl, originalUrl,})
+            .values({ shortenedLink, originalLink,})
             .returning({ id: shortenedLinksSchema.id })
 
-        return makeRight({ id: newShortenedUrl.id })
+        return makeRight({ id: newShortenedLink.id })
     } catch (error: any) {
         const isUniqueViolation =
-            error?.code === "23505" || error?.message?.includes("shortened_url")
+            error?.code === "23505" || error?.message?.includes("shortened_link")
 
         if (isUniqueViolation) {
-            return makeLeft("SHORTENED_URL_ALREADY_EXISTS")
+            return makeLeft("SHORTENED_LINK_ALREADY_EXISTS")
         }
 
         console.error("[CreateShortenedLink] Unknown error:", error)

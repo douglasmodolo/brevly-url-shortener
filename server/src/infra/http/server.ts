@@ -4,6 +4,11 @@ import fastify from "fastify";
 import fastifyCors from '@fastify/cors'
 import { hasZodFastifySchemaValidationErrors, jsonSchemaTransform, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod";
 import { createShortenedLinkRoute } from "./routes/create-shortened-link";
+import { deleteShortenedLinkRoute } from './routes/delete-shortened-link';
+import { getOriginalLinkRoute } from './routes/get-original-link';
+import { getShortenedLinksRoute } from './routes/get-shortened-links';
+import { redirectRoute } from './routes/redirect-route';
+import { exportShortenedLinksRoute } from './routes/export-shortened-links';
 
 const server = fastify()
 
@@ -17,21 +22,22 @@ server.setErrorHandler((error, request, reply) => {
       .send({ message: 'Validation error.', issues: error.validation })
   }
 
-  // Envia o erro p/ alguma ferramenta de observabilidade (Sentry/DataDog/Grafana/OTel)
-  console.error(error)
-
   return reply.status(500).send({ message: 'Internal server error' })
 })
 
-server.register(fastifyCors, { origin: '*' })
+server.register(fastifyCors, { 
+  origin: '*',
+  methods: ['GET', 'POST', 'DELETE'],
+})
 
 server.register(fastifySwagger, {
   openapi: {
     info: {
-      title: 'Upload Server',
+      title: 'Brev.ly API',
       version: '1.0.0',
     },
   },
+  transform: jsonSchemaTransform,
 })
 
 server.register(fastifySwaggerUi, {
@@ -39,6 +45,11 @@ server.register(fastifySwaggerUi, {
 })
 
 server.register(createShortenedLinkRoute)
+server.register(deleteShortenedLinkRoute)
+server.register(getOriginalLinkRoute)
+server.register(getShortenedLinksRoute)
+server.register(redirectRoute)
+server.register(exportShortenedLinksRoute)
 
 server.listen({port: 3333, host: '0.0.0.0',}).then(() => {
   console.log('HTTP server running !')

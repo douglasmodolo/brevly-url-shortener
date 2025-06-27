@@ -1,3 +1,3 @@
 export type ShortenedLinkCreationError =
-  | 'SHORTENED_URL_ALREADY_EXISTS'
+  | 'SHORTENED_LINK_ALREADY_EXISTS'
   | 'UNKNOWN_ERROR'
