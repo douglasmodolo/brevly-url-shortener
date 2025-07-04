@@ -5,3 +5,16 @@
 body {
   @apply font-sans;
 }
+
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+.animate-loading-bar {
+  animation: loading-bar 0.7s linear infinite;
+}
