@@ -5,7 +5,7 @@ export function NewLink() {
     return (
         <form 
             action=""
-            className="w-full max-w-md md:min-w-145 flex flex-col flex-1 gap-10 md:gap-12 bg-gray-100 rounded-lg p-6"
+            className="w-full max-w-md md:min-w-145 flex flex-col flex-1 gap-6 bg-gray-100 rounded-lg p-6"
         >
             {/* Header */}
             <h2

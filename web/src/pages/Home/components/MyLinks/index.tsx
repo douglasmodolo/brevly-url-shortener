@@ -2,33 +2,44 @@ import { DownloadSimple, LinkSimple } from "phosphor-react";
 import { Button } from "../../../../components/Button";
 import { Link } from "./Link";
 import { getShortenedLinks, type ShortenedLink } from "../../../../services/get-shortened-links";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { deleteShortenedLink } from "../../../../services/delete-shortened-link";
+import { toast } from "sonner";
 
 export function MyLinks() {
     const [links, setLinks] = useState<ShortenedLink[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        async function loadLinks() {
-            try {
-                const data = await getShortenedLinks()
-                //console.log("Links recebidos:", data)
-                //setLinks([])
-                setLinks(data)
-            } catch (error) {
-                console.error("Error loading links:", error);
-            } finally {
-                setIsLoading(false);
-            }
-
+    const loadLinks = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            const data = await getShortenedLinks();
+            //console.log("Links recebidos:", data);
+            setLinks(data);
+        } catch (error) {
+            console.error("Error loading links:", error);
+        } finally {
+            setIsLoading(false);
         }
-
-        loadLinks()
     }, [])
 
+    useEffect(() => {        
+        loadLinks()
+
+        const handleFocus = () => {
+            loadLinks()
+        }
+
+        window.addEventListener('focus', handleFocus);
+
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+        }
+    }, [loadLinks])
+
     return (
-        <div className="relative w-full max-w-md md:min-w-145 min-h-60 flex flex-col flex-1 gap-6 bg-gray-100 rounded-lg p-6">
+        <div className="relative w-full max-w-2xl md:min-w-145 min-h-60 flex flex-col flex-1 gap-6 bg-gray-100 rounded-lg p-6">
             {isLoading && (
                 <div className="absolute top-0 left-0 right-0 h-1 overflow-hidden rounded-t-lg">
                     <div className="bg-blue-base h-full w-1/3 animate-loading-bar" />
@@ -81,6 +92,32 @@ export function MyLinks() {
                             shortenedUrl={link.shortenedLink}
                             originalUrl={link.originalLink}
                             accessCount={link.accessCount}
+                            onCopy={() => {
+                                const fullUrl = `${import.meta.env.VITE_FRONTEND_URL}/r/${link.shortenedLink}`;
+                                
+                                navigator.clipboard.writeText(fullUrl);
+                                
+                                toast.info("Link copiado com sucesso", {
+                                    description: `O link ${link.shortenedLink} foi copiado para a área de transferência.`,
+                                }); 
+                            }}
+                            onDelete={async () => {
+                                if (!window.confirm("Tem certeza que deseja excluir este link?")) return;
+                                
+                                try {
+                                    await deleteShortenedLink(link.id);
+                                    loadLinks();
+
+                                    toast.success("Link excluído com sucesso", {
+                                        description: `O link ${link.shortenedLink} foi removido.`,
+                                    });
+                                } catch (error) {
+                                    console.error("Erro ao excluir o link:", error);
+                                    toast.error("Erro ao excluir", {
+                                        description: "Ocorreu um erro ao tentar excluir o link. Tente novamente.",
+                                    });
+                                }                                
+                            }}
                         />
                     ))}
                 </div>                

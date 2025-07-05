@@ -22,9 +22,14 @@ export function Link({
     return (
         <div className="w-full flex items-center justify-between gap-3 p-3 relative overflow-hidden [&+div]:mt-2">
             <div className="max-w-[140px] lg:max-w-[300px] flex-1 flex flex-col gap-1">
-                <span className="text-blue-base text-md truncate">
-                    {shortenedUrl}
-                </span>
+                <a
+                    href={`${import.meta.env.VITE_FRONTEND_URL}/r/${shortenedUrl}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-base text-md truncate hover:underline"
+                >
+                    brev.ly/{shortenedUrl}
+                </a>
                 <span className="text-gray-500 text-sm truncate">
                     {originalUrl}
                 </span>
@@ -46,7 +51,7 @@ export function Link({
                 <Button
                     variant="secondary"
                     icon={Trash}   
-                    onAbort={onDelete}                 
+                    onClick={onDelete}                 
                 >
                     <span className="sr-only">Excluir link</span>
                 </Button>
