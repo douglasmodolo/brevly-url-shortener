@@ -1,12 +1,13 @@
-import { type ComponentProps } from 'react'
-import { tv } from 'tailwind-variants'
+import type { ComponentProps, ComponentRef } from 'react'
+import { forwardRef } from 'react'
+import { tv, type VariantProps } from 'tailwind-variants'
 
-const labelVariants = tv({
-  base: 'text-xs text-gray-500 uppercase font-semibold peer-focus:font-bold',
+const inputVariants = tv({
+  base: 'peer w-full h-12 px-4 rounded-lg border text-sm placeholder:text-gray-400 transition-all',
   variants: {
     intent: {
-      default: 'peer-focus:text-blue-base',
-      error: 'peer-focus:text-danger',
+      default: 'border-gray-300 text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-base',
+      error: 'border-danger text-danger focus:outline-none focus:ring-2 focus:ring-danger',
     },
   },
   defaultVariants: {
@@ -14,57 +15,56 @@ const labelVariants = tv({
   },
 })
 
-const inputVariants = tv({
-    base: 'peer z-1 text-md text-gray-600 font-normal border border-gray-300 caret-blue-base rounded-lg h-[48px] px-4 placeholder:text-gray-400',
-    variants: {
-        intent: {
-            default: 'focus:outline-blue-base',
-            error: 'focus:outline-danger',
-        },
+const labelVariants = tv({
+  base: 'text-xs font-semibold uppercase peer-focus:font-bold',
+  variants: {
+    intent: {
+      default: 'text-gray-500 peer-focus:text-blue-base',
+      error: 'text-danger peer-focus:text-danger',
     },
-    defaultVariants: {
-        intent: 'default',
-    },
+  },
+  defaultVariants: {
+    intent: 'default',
+  },
 })
 
-type InputProps = ComponentProps<'input'> & {
-    id: string
-    label: string
-    fixedPlaceholder?: string
-    error?: string
+type InputProps = ComponentProps<'input'> & VariantProps<typeof inputVariants> & {
+  id: string
+  label: string
+  fixedPlaceholder?: string
+  error?: string
 }
 
-export const Input: React.FC<InputProps> = ({
-    id,
-    label,
-    fixedPlaceholder,
-    error,
-    ...props
-}) => {
-    const intent = error ? 'error' : 'default'
+export const Input = forwardRef<ComponentRef<'input'>, InputProps>(function InputBase({
+  id,
+  label,
+  fixedPlaceholder,
+  error,
+  intent,
+  className,
+  ...props
+}, ref) {
+  const currentIntent = error ? 'error' : intent ?? 'default'
 
-    return (
-        <div className='flex flex-col-reverse gap-2 w-full'>
-             {error && (
-                 <span className="text-xs text-danger mt-1">
-                     {error}
-                 </span>
-             )}
+  return (
+    <div className="flex flex-col-reverse gap-2 w-full">
+      {error && (
+        <span className="text-xs text-danger mt-1">
+          {error}
+        </span>
+      )}
 
-            <input 
-                id={id}
-                className='peer w-full h-12 px-4 rounded-lg border border-gray-300 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-base'
-                type='text'
-                placeholder={fixedPlaceholder}
-            />
+      <input
+        id={id}
+        ref={ref}
+        placeholder={fixedPlaceholder}
+        className={inputVariants({ intent: currentIntent, className })}
+        {...props}
+      />
 
-            <label 
-                htmlFor={id}
-                className={labelVariants({ intent })}
-            >                    
-                {label}                
-            </label>
-
-        </div>
-    )
-}
+      <label htmlFor={id} className={labelVariants({ intent: currentIntent })}>
+        {label}
+      </label>
+    </div>
+  )
+})
