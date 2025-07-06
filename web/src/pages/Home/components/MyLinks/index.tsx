@@ -1,43 +1,19 @@
 import { DownloadSimple, LinkSimple } from "phosphor-react";
 import { Button } from "../../../../components/Button";
 import { Link } from "./Link";
-import { getShortenedLinks, type ShortenedLink } from "../../../../services/get-shortened-links";
-import { useCallback, useEffect, useState } from "react";
+import { type ShortenedLink } from "../../../../services/get-shortened-links";
 import { motion } from "framer-motion";
 import { deleteShortenedLink } from "../../../../services/delete-shortened-link";
 import { toast } from "sonner";
 import { exportShortenedLinks } from "../../../../services/export-shortened-links";
 
-export function MyLinks() {
-    const [links, setLinks] = useState<ShortenedLink[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+type MyLinksProps = {
+    links: ShortenedLink[];
+    isLoading?: boolean;
+    onReload: () => void;
+}
 
-    const loadLinks = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const data = await getShortenedLinks();
-            setLinks(data);
-        } catch (error) {
-            console.error("Error loading links:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [])
-
-    useEffect(() => {        
-        loadLinks()
-
-        const handleFocus = () => {
-            loadLinks()
-        }
-
-        window.addEventListener('focus', handleFocus);
-
-        return () => {
-            window.removeEventListener('focus', handleFocus);
-        }
-    }, [loadLinks])
-
+export function MyLinks({ links, isLoading, onReload }: MyLinksProps) {
     return (
         <div className="relative w-full max-w-2xl md:min-w-145 min-h-60 flex flex-col flex-1 gap-6 bg-gray-100 rounded-lg p-6">
             {isLoading && (
@@ -45,7 +21,6 @@ export function MyLinks() {
                     <div className="bg-blue-base h-full w-1/3 animate-loading-bar" />
                 </div>
             )}
-
 
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -108,29 +83,29 @@ export function MyLinks() {
                             originalUrl={link.originalLink}
                             accessCount={link.accessCount}
                             onCopy={() => {
-                                const fullUrl = `${import.meta.env.VITE_FRONTEND_URL}/r/${link.shortenedLink}`;
+                                const fullUrl = `${import.meta.env.VITE_FRONTEND_URL}/r/${link.shortenedLink}`
                                 
-                                navigator.clipboard.writeText(fullUrl);
+                                navigator.clipboard.writeText(fullUrl)
                                 
                                 toast.info("Link copiado com sucesso", {
                                     description: `O link ${link.shortenedLink} foi copiado para a área de transferência.`,
                                 }); 
                             }}
                             onDelete={async () => {
-                                if (!window.confirm("Tem certeza que deseja excluir este link?")) return;
+                                if (!window.confirm("Tem certeza que deseja excluir este link?")) return
                                 
                                 try {
-                                    await deleteShortenedLink(link.id);
-                                    loadLinks();
+                                    await deleteShortenedLink(link.id)
+                                    onReload()
 
                                     toast.success("Link excluído com sucesso", {
                                         description: `O link ${link.shortenedLink} foi removido.`,
                                     });
                                 } catch (error) {
-                                    console.error("Erro ao excluir o link:", error);
+                                    console.error("Erro ao excluir o link:", error)
                                     toast.error("Erro ao excluir", {
                                         description: "Ocorreu um erro ao tentar excluir o link. Tente novamente.",
-                                    });
+                                    })
                                 }                                
                             }}
                         />

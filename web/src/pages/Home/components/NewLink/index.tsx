@@ -18,7 +18,7 @@ const newLinkSchema = z.object({
 
 type NewLinkFormData = z.infer<typeof newLinkSchema>
 
-export function NewLink() {
+export function NewLink({ onLinkCreated }: { onLinkCreated: () => void }) {
 
     const {
         register,
@@ -37,8 +37,10 @@ export function NewLink() {
                 shortenedLink: data.shortenedLink,
             })
 
-            toast.success("Link criado com sucesso!");
-            reset();
+            toast.success("Link criado com sucesso!")
+            reset()
+            
+            onLinkCreated()
         } catch (error: any) {
             toast.error("Erro ao criar link", {
                 description: error?.response?.data?.message ?? "Tente novamente mais tarde.",
@@ -56,6 +58,7 @@ export function NewLink() {
                 Novo Link
             </h2>
         
+
             <Input
                 id="original-url"
                 label="Link original"
@@ -64,13 +67,15 @@ export function NewLink() {
                 {...register("originalLink")}
             />
 
-            <Input
-                id="shortened-url"
-                label="Link encurtado"
-                fixedPlaceholder="brev.ly/"   
-                error={submitCount > 0 || touchedFields.shortenedLink ? errors.shortenedLink?.message : undefined}         
-                {...register("shortenedLink")}
-            />            
+            <div>
+                <Input
+                    id="shortened-url"
+                    label="Link encurtado"
+                    fixedPlaceholder="brev.ly/"   
+                    error={submitCount > 0 || touchedFields.shortenedLink ? errors.shortenedLink?.message : undefined}         
+                    {...register("shortenedLink")}
+                />            
+            </div>
 
             <Button
                 type="submit"                

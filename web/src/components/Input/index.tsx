@@ -1,3 +1,4 @@
+import { Warning } from 'phosphor-react'
 import type { ComponentProps, ComponentRef } from 'react'
 import { forwardRef } from 'react'
 import { tv, type VariantProps } from 'tailwind-variants'
@@ -45,22 +46,52 @@ export const Input = forwardRef<ComponentRef<'input'>, InputProps>(function Inpu
   ...props
 }, ref) {
   const currentIntent = error ? 'error' : intent ?? 'default'
+  const isShortenedLink = id === 'shortened-url'
 
   return (
     <div className="flex flex-col-reverse gap-2 w-full">
       {error && (
-        <span className="text-xs text-danger mt-1">
-          {error}
+        <span className="text-xs text-danger mt-1 flex items-center gap-1">
+            <Warning size={14} />
+            {error}
         </span>
       )}
 
-      <input
-        id={id}
-        ref={ref}
-        placeholder={fixedPlaceholder}
-        className={inputVariants({ intent: currentIntent, className })}
-        {...props}
-      />
+      {id === "shortened-url" ? (
+        <div
+          className={`flex items-center w-full h-12 rounded-lg border text-sm transition-all
+            focus-within:ring-2 px-4 bg-white overflow-hidden
+            placeholder:text-gray-400
+            ${currentIntent === 'error' 
+              ? 'border-danger text-danger focus-within:ring-danger focus-within:border-danger'
+              : 'border-gray-300 text-gray-600 focus-within:ring-blue-base focus-within:border-blue-base'
+            }`
+          }
+        >
+          <span className={`font-semibold select-none shrink-0 ${
+            currentIntent === 'error' ? 'text-danger' : 'text-blue-base'
+          }`}>
+            brev.ly/
+          </span>
+          
+          <input
+            id={id}
+            ref={ref}
+            type="text"
+            className="flex-1 outline-none border-none bg-transparent text-sm placeholder:text-gray-400"
+            placeholder="meu-link"
+            {...props}
+          />
+        </div>
+      ) : (
+        <input
+          id={id}
+          ref={ref}
+          placeholder={fixedPlaceholder}
+          className={inputVariants({ intent: currentIntent, className })}
+          {...props}
+        />
+      )}
 
       <label htmlFor={id} className={labelVariants({ intent: currentIntent })}>
         {label}
