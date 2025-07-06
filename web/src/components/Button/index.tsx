@@ -10,6 +10,8 @@ const buttonVariants = tv({
       primary: `
         bg-blue-base w-full h-[48px] text-white text-md rounded-lg px-20 py-7.5 
         hover:bg-blue-dark 
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white
+        transition-colors duration-300
         disabled:cursor-not-allowed disabled:opacity-50
       `,
       secondary: `

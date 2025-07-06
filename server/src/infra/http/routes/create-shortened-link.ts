@@ -40,11 +40,11 @@ export const createShortenedLinkRoute: FastifyPluginAsyncZod = async server => {
 
             switch (error) {
                 case 'SHORTENED_LINK_ALREADY_EXISTS':
-                    return reply.status(400).send({ message: 'Shortened link already exists' })
+                    return reply.status(400).send({ message: 'Essa URL encurtada já existe.' })
                 case 'UNKNOWN_ERROR':
                 default:
                     console.error('[CreateShortenedLink] Unknown error:', error);
-                    return reply.status(500).send({ message: 'An unknown error occurred' })
+                    return reply.status(500).send({ message: 'Ocorreu um erro desconhecido.' })
             }        
         }
     )
