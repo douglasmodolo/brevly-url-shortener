@@ -8,12 +8,9 @@ export function NewLink() {
             className="w-full max-w-md md:min-w-145 flex flex-col flex-1 gap-6 bg-gray-100 rounded-lg p-6"
         >
             {/* Header */}
-            <h2
-                className="text-gray-600 text-lg"    
-            >
+            <h2 className="text-gray-600 text-lg">
                 Novo Link
             </h2>
-
         
             <Input
                 id="original-url"

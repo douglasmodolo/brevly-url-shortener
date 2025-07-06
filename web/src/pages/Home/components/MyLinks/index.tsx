@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { deleteShortenedLink } from "../../../../services/delete-shortened-link";
 import { toast } from "sonner";
+import { exportShortenedLinks } from "../../../../services/export-shortened-links";
 
 export function MyLinks() {
     const [links, setLinks] = useState<ShortenedLink[]>([]);
@@ -15,7 +16,6 @@ export function MyLinks() {
         try {
             setIsLoading(true);
             const data = await getShortenedLinks();
-            //console.log("Links recebidos:", data);
             setLinks(data);
         } catch (error) {
             console.error("Error loading links:", error);
@@ -57,6 +57,21 @@ export function MyLinks() {
                     disabled={links.length === 0}
                     variant="secondary"
                     icon={DownloadSimple}
+                    onClick={async () => {
+                        try {
+                            const { reportUrl } = await exportShortenedLinks()
+                            window.open(reportUrl, '_blank')
+
+                            toast.success("Relatório exportado com sucesso", {
+                                description: "O relatório dos links foi gerado e está pronto para download.",
+                            })
+                        } catch (error) {
+                            console.error("Erro ao exportar CSV:", error)
+                            toast.error("Erro ao exportar", {
+                                description: "Ocorreu um erro ao tentar exportar os links. Tente novamente.",
+                            })
+                        }                        
+                    }}
                 >
                     Baixar CSV
                 </Button>
@@ -85,7 +100,7 @@ export function MyLinks() {
                     </span>                    
                 </motion.div>
             ) : (
-                <div className="gap-2 divide-y divide-gray-200">                
+                <div className="gap-2 divide-y divide-gray-200 overflow-y-auto max-h-[calc(100vh-25rem)] pr-1 custom-scrollbar">                
                     {links.map(link => (
                         <Link 
                             key={link.id}
