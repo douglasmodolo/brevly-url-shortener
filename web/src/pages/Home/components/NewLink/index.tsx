@@ -68,6 +68,7 @@ export function NewLink({ onLinkCreated }: { onLinkCreated: () => void }) {
             />
 
             <div>
+                
                 <Input
                     id="shortened-url"
                     label="Link encurtado"

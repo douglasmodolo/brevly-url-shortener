@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { deleteShortenedLink } from "../../../../services/delete-shortened-link";
 import { toast } from "sonner";
 import { exportShortenedLinks } from "../../../../services/export-shortened-links";
+import { useState } from "react";
 
 type MyLinksProps = {
     links: ShortenedLink[];
@@ -14,6 +15,9 @@ type MyLinksProps = {
 }
 
 export function MyLinks({ links, isLoading, onReload }: MyLinksProps) {
+    
+    const [isExporting, setIsExporting] = useState(false);
+
     return (
         <div className="relative w-full max-w-2xl md:min-w-145 min-h-60 flex flex-col flex-1 gap-6 bg-gray-100 rounded-lg p-6">
             {isLoading && (
@@ -31,9 +35,16 @@ export function MyLinks({ links, isLoading, onReload }: MyLinksProps) {
                 <Button
                     disabled={links.length === 0}
                     variant="secondary"
-                    icon={DownloadSimple}
+                    icon={
+                        isExporting 
+                        ? () => (
+                                <div className="w-4 h-4 border-2 border-blue-base border-t-transparent rounded-full animate-spin" />
+                            )
+                        : DownloadSimple
+                    }
                     onClick={async () => {
                         try {
+                            setIsExporting(true);
                             const { reportUrl } = await exportShortenedLinks()
                             window.open(reportUrl, '_blank')
 
@@ -45,7 +56,9 @@ export function MyLinks({ links, isLoading, onReload }: MyLinksProps) {
                             toast.error("Erro ao exportar", {
                                 description: "Ocorreu um erro ao tentar exportar os links. Tente novamente.",
                             })
-                        }                        
+                        } finally {
+                            setIsExporting(false);
+                        }                       
                     }}
                 >
                     Baixar CSV

@@ -3,20 +3,30 @@ import type { ComponentProps, ComponentType } from "react";
 import { tv, type VariantProps } from "tailwind-variants"
 
 const buttonVariants = tv({
-    base: 'flex flex-row gap-3 items-center justify-center cursor-pointer transition-all duration-300 disabled:cursor-not-allowed',
+  base: 'flex flex-row gap-3 items-center justify-center transition-all duration-300',
 
-    variants: {
-        variant: {
-            primary: 
-                'bg-blue-base w-full h-[48px] text-white text-md rounded-lg px-20 py-7.5 enabled:hover:bg-blue-dark disabled:opacity-50',
-            secondary: 
-                'bg-gray-200 border-gray-200 h-[32px] text-sm font-semibold text-gray-500 rounded p-3.5 enabled:hover:border-blue-base disabled:opacity-50',
-        },        
+  variants: {
+    variant: {
+      primary: `
+        bg-blue-base w-full h-[48px] text-white text-md rounded-lg px-20 py-7.5 
+        hover:bg-blue-dark 
+        disabled:cursor-not-allowed disabled:opacity-50
+      `,
+      secondary: `
+        bg-gray-200 border border-gray-200 
+        h-[32px] text-sm font-semibold text-gray-500 
+        rounded p-3.5 
+        hover:border-blue-base 
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-base
+        transition-colors duration-300 
+        disabled:cursor-not-allowed disabled:opacity-50
+      `,
     },
-    defaultVariants: {
-        variant: 'primary',
-    },
-})
+  },
+  defaultVariants: {
+    variant: 'primary',
+  },
+});
 
 type ButtonProps = ComponentProps<'button'> & VariantProps<typeof buttonVariants> & {
     icon?: ComponentType<IconProps>;
